@@ -13,7 +13,23 @@ GameEngineSocketClient::GameEngineSocketClient()
 
 GameEngineSocketClient::~GameEngineSocketClient()
 {
+	if (socket_ == 0)
+	{
+		std::cout << "연결된 서버가 없습니다.\n";
+		GameEngineDebug::OutPutDebugString("연결된 서버가 없습니다.\n");
+		return;
+	}
 
+	shutdown(socket_, SD_BOTH);
+	closesocket(socket_);
+
+	if (nullptr != receiveThread_)
+	{
+		receiveThread_->join();
+		delete receiveThread_;
+		receiveThread_ = nullptr;
+	}
+	socket_ = 0;
 }
 
 void GameEngineSocketClient::Initialize()
@@ -21,7 +37,8 @@ void GameEngineSocketClient::Initialize()
 	WSAData wsaData;
 	int errorCode = WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	GameEngineDebug::OutPutDebugString("Winsock 초기화를 실시합니다.");
+	std::cout << "Winsock 초기화를 실시합니다.\n";
+	GameEngineDebug::OutPutDebugString("Winsock 초기화를 실시합니다.\n");
 	if (SOCKET_ERROR == errorCode)
 	{
 		GameEngineDebug::MsgBoxError("WSAStartup falied");
@@ -33,14 +50,16 @@ void GameEngineSocketClient::Connect(const std::string& _ip)
 {
 	if (socket_ != 0)
 	{
-		GameEngineDebug::OutPutDebugString("서버가 이미 열려있습니다.");
+		std::cout << "서버가 이미 열려있습니다.\n";
+		GameEngineDebug::OutPutDebugString("서버가 이미 열려있습니다.\n");
 		return;
 	}
 
 	socket_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (INVALID_SOCKET == socket_)
 	{
-		GameEngineDebug::OutPutDebugString("소켓 생성에 실패했습니다.");
+		std::cout << "소켓 생성에 실패했습니다.\n";
+		GameEngineDebug::OutPutDebugString("소켓 생성에 실패했습니다.\n");
 		return;
 	}
 
@@ -51,20 +70,46 @@ void GameEngineSocketClient::Connect(const std::string& _ip)
 
 	if (SOCKET_ERROR == inet_pton(AF_INET, _ip.c_str(), &address.sin_addr)) // 로컬 호스트
 	{
-		GameEngineDebug::OutPutDebugString("주소 초기화에 실패했습니다.");
+		std::cout << "주소 초기화에 실패했습니다.\n";
+		GameEngineDebug::OutPutDebugString("주소 초기화에 실패했습니다.\n");
 		return;
 	}
 
 	int connetResult = connect(socket_, (sockaddr*)&address, sizeof(address));
 	if (SOCKET_ERROR == connetResult)
 	{
-		GameEngineDebug::OutPutDebugString("서버에 연결할 수 없습니다.");
+		std::cout << "서버에 연결할 수 없습니다.\n";
+		GameEngineDebug::OutPutDebugString("서버에 연결할 수 없습니다.\n");
 		return;
 	}
 
 	// 연결이 됐다면? 전송 스레드, 대기 스레드
 	bConneted_ = true;
-	receiveThread_ = new std::thread(std::bind(&GameEngineSocketClient::receiveFunction, this, socket_));
+	if (receiveThread_ == nullptr)
+	{
+		receiveThread_ = new std::thread(std::bind(&GameEngineSocketClient::receiveFunction, this, socket_));
+	}
+}
+
+void GameEngineSocketClient::Disconnect()
+{
+	if (socket_ == 0)
+	{
+		std::cout << "연결된 서버가 없습니다.\n";
+		GameEngineDebug::OutPutDebugString("연결된 서버가 없습니다.\n");
+		return;
+	}
+
+	shutdown(socket_, SD_BOTH);
+	closesocket(socket_);
+
+	if (nullptr != receiveThread_)
+	{
+		receiveThread_->join();
+		delete receiveThread_;
+		receiveThread_ = nullptr;
+	}
+	socket_ = 0;
 }
 
 void GameEngineSocketClient::receiveFunction(SOCKET& _clientSocket)
@@ -78,12 +123,18 @@ void GameEngineSocketClient::receiveFunction(SOCKET& _clientSocket)
 
 		if (SOCKET_ERROR == Result)
 		{
-
-			GameEngineDebug::OutPutDebugString("서버로부터 연결이 종료되었습니다.");
+			std::cout << "서버로부터 연결이 종료되었습니다.\n";
+			GameEngineDebug::OutPutDebugString("서버로부터 연결이 종료되었습니다.\n");
+			return;
+		}
+		else if (WSAESHUTDOWN == Result)
+		{
+			std::cout << "연결을 종료했습니다.\n";
+			GameEngineDebug::OutPutDebugString("연결을 종료했습니다.\n");
 			return;
 		}
 
-		
+
 		ZeroMemory(packet, PACKET_SIZE);
 	}
 }

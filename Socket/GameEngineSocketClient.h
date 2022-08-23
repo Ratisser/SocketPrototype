@@ -9,6 +9,8 @@
 #include <WS2tcpip.h> // inet_pton 함수를 사용하기 위한 헤더
 #pragma comment (lib, "ws2_32")
 
+#include <iostream>
+
 class GameEnginePacket;
 class GameEngineSocketClient
 {
@@ -23,6 +25,7 @@ public:
 public:
 	void Initialize(); // 소켓 초기화를 합니다.
 	void Connect(const std::string& _ip);
+	void Disconnect();
 
 	void Send(const GameEnginePacket* _packet);
 

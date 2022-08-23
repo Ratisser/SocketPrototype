@@ -130,7 +130,7 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 			GameEngineDebug::OutPutDebugString("클라이언트의 접속이 종료되었습니다.\n");
 
 			locker_.lock();
-			auto findSocketIter = std::find(clientSocketList_.begin(), clientSocketList_.end(), _clientSocket);
+			std::vector<SOCKET>::iterator findSocketIter = std::find(clientSocketList_.begin(), clientSocketList_.end(), _clientSocket);
 			SOCKET findSocket = *findSocketIter;
 			clientSocketList_.erase(findSocketIter);
 			
