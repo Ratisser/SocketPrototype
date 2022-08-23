@@ -129,7 +129,7 @@ void GameEngineSocketClient::receiveFunction(SOCKET& _clientSocket)
 			return;
 		}
 
-
+		std::cout << packet << std::endl;
 		ZeroMemory(packet, PACKET_SIZE);
 	}
 }

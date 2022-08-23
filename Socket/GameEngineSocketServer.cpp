@@ -113,6 +113,7 @@ void GameEngineSocketServer::acceptFunction()
 			return;
 		}
 
+		std::cout << "새로운 클라이언트가 접속했습니다.\n";
 		GameEngineDebug::OutPutDebugString("새로운 클라이언트가 접속했습니다.\n");
 
 		locker_.lock();
@@ -141,14 +142,24 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 			GameEngineDebug::OutPutDebugString("클라이언트의 접속이 종료되었습니다.\n");
 
 			locker_.lock();
+
 			std::vector<SOCKET>::iterator findSocketIter = std::find(clientSocketList_.begin(), clientSocketList_.end(), _clientSocket);
-			SOCKET findSocket = *findSocketIter;
-			clientSocketList_.erase(findSocketIter);
+			if (findSocketIter != clientSocketList_.end())
+			{
+				SOCKET findSocket = *findSocketIter;
+				clientSocketList_.erase(findSocketIter);
+			}
 
-			auto findThreadIter = clientReceiveThreadList_.find(findSocket);
-			findThreadIter->second.detach();
 
-			clientReceiveThreadList_.erase(findThreadIter);
+
+			auto findThreadIter = clientReceiveThreadList_.find(_clientSocket);
+			if (findThreadIter != clientReceiveThreadList_.end())
+			{
+				findThreadIter->second.detach();
+
+				clientReceiveThreadList_.erase(_clientSocket);
+
+			}
 
 			locker_.unlock();
 			return;
