@@ -33,6 +33,7 @@ private:
 
 private:
 	enum { PACKET_SIZE = 1024 };
+	bool bOpen_;
 	SOCKET serverSocket_;
 	std::thread* acceptThread_;
 	

@@ -8,7 +8,6 @@ GameEngineSocketClient::GameEngineSocketClient()
 	, bConneted_(false)
 	, receiveThread_(nullptr)
 {
-
 }
 
 GameEngineSocketClient::~GameEngineSocketClient()
@@ -111,6 +110,11 @@ void GameEngineSocketClient::Disconnect()
 		receiveThread_ = nullptr;
 	}
 	socket_ = 0;
+}
+
+void GameEngineSocketClient::Send(const GameEnginePacket* _packet)
+{
+
 }
 
 void GameEngineSocketClient::receiveFunction(SOCKET& _clientSocket)

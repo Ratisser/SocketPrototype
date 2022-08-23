@@ -8,6 +8,7 @@
 GameEngineSocketServer::GameEngineSocketServer()
 	: serverSocket_(0)
 	, acceptThread_(nullptr)
+	, bOpen_(false)
 {
 }
 
@@ -85,11 +86,16 @@ void GameEngineSocketServer::OpenServer()
 	std::cout << "서버를 열었습니다.\n";
 	GameEngineDebug::OutPutDebugString("서버를 열었습니다.\n");
 
+	bOpen_ = true;
 	acceptThread_ = new std::thread(std::bind(&GameEngineSocketServer::acceptFunction, this));
+
 }
 
 void GameEngineSocketServer::CloseServer()
 {
+	locker_.lock();
+	bOpen_ = false;
+
 	if (nullptr != acceptThread_)
 	{
 		closesocket(serverSocket_);
@@ -97,6 +103,24 @@ void GameEngineSocketServer::CloseServer()
 		acceptThread_->join();
 		delete acceptThread_;
 		acceptThread_ = nullptr;
+	}
+
+	for (SOCKET s : clientSocketList_)
+	{
+		closesocket(s);
+	}
+
+	clientSocketList_.clear();
+
+	locker_.unlock();
+
+	auto startIter = clientReceiveThreadList_.begin();
+	auto endIter = clientReceiveThreadList_.end();
+
+	while (startIter != endIter)
+	{
+		startIter->second.join();
+		startIter++;
 	}
 }
 
@@ -133,7 +157,6 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 
 	while (true)
 	{
-
 		int Result = recv(_clientSocket, packet, sizeof(packet), 0);
 
 		if (SOCKET_ERROR == Result)
@@ -142,14 +165,22 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 			GameEngineDebug::OutPutDebugString("클라이언트의 접속이 종료되었습니다.\n");
 
 			locker_.lock();
-
-			std::vector<SOCKET>::iterator findSocketIter = std::find(clientSocketList_.begin(), clientSocketList_.end(), _clientSocket);
-			if (findSocketIter != clientSocketList_.end())
+			if (bOpen_ == false)
 			{
-				SOCKET findSocket = *findSocketIter;
-				clientSocketList_.erase(findSocketIter);
+				locker_.unlock();
+				return;
 			}
 
+			size_t clientCount = clientSocketList_.size();
+
+			for (size_t i = 0; i < clientCount; i++)
+			{
+				if (_clientSocket == clientSocketList_[i])
+				{
+					clientSocketList_[i] = clientSocketList_.back();
+					clientSocketList_.pop_back();
+				}
+			}
 
 
 			auto findThreadIter = clientReceiveThreadList_.find(_clientSocket);

@@ -29,6 +29,8 @@ int main()
 	}
 
 	server.CloseServer();
+
+	system("pause");
 }
 #else
 int main()
