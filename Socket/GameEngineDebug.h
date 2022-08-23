@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
-// #include <WinSock2.h>
+#include <WinSock2.h>
+#include <Windows.h>
+#include <cassert>
 
 // 분류 : 디버거
 // 용도 : 메모리관리 메세지 출력 로그

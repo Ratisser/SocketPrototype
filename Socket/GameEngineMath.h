@@ -1,5 +1,11 @@
 #pragma once
 
+#include <DirectXPackedVector.h>
+#include <DirectXPackedVector.inl>
+#include <Windows.h>
+
+#include <string>
+
 class GameEngineMath
 {
 public:

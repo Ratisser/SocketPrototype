@@ -2,9 +2,26 @@
 //
 
 #include <iostream>
+#include <conio.h>
+#include "GameEngineSocketServer.h"
+
 
 int main()
 {
+	GameEngineSocketServer server;
+	server.Initialize();
+	server.OpenServer();
 
-    std::cout << "Hello World!\n";
+
+	while (true)
+	{
+		Sleep(1);
+		int input = _getch();
+		if (input == 'q')
+		{
+			break;
+		}
+	}
+
+	server.CloseServer();
 }

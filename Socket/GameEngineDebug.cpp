@@ -1,6 +1,7 @@
 #include "GameEngineDebug.h"
 
 
+
 // Static Var
 // Static Func
 // constructer destructer
@@ -16,7 +17,7 @@ GameEngineDebug::GameEngineDebug(GameEngineDebug&& _other) noexcept
 {
 }
 
-void GameEngineDebug::LeakCheckOn(int Check) 
+void GameEngineDebug::LeakCheckOn(int Check)
 {
 	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
 
@@ -34,7 +35,7 @@ void GameEngineDebug::MsgBoxError(const std::string& _Ptr)
 	assert(false);
 }
 
-void GameEngineDebug::MsgBox(const std::string& _Ptr) 
+void GameEngineDebug::MsgBox(const std::string& _Ptr)
 {
 	MessageBoxA(nullptr, _Ptr.c_str(), "Error", MB_OK);
 }
