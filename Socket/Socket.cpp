@@ -4,8 +4,13 @@
 #include <iostream>
 #include <conio.h>
 #include "GameEngineSocketServer.h"
+#include "GameEngineSocketClient.h"
 
+#include <Windows.h>
 
+#define SERVER
+
+#ifdef SERVER
 int main()
 {
 	GameEngineSocketServer server;
@@ -25,3 +30,30 @@ int main()
 
 	server.CloseServer();
 }
+#else
+int main()
+{
+	GameEngineSocketClient c;
+	c.Initialize();
+	c.Connect("121.129.74.58");
+
+
+	while (true)
+	{
+		Sleep(1);
+		int input = _getch();
+		if (input == 'q')
+		{
+			break;
+		}
+	}
+
+	c.Disconnect();
+	system("pause");
+}
+
+#endif // DEBUG
+
+
+
+

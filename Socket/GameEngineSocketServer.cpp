@@ -3,6 +3,7 @@
 #include "GameEngineDebug.h"
 #include <algorithm>
 #include <functional>
+#include <iostream>
 
 GameEngineSocketServer::GameEngineSocketServer()
 	: serverSocket_(0)
@@ -27,6 +28,7 @@ void GameEngineSocketServer::Initialize()
 	WSAData wsaData;
 	int errorCode = WSAStartup(MAKEWORD(2, 2), &wsaData);
 
+	std::cout << "Winsock 초기화를 실시합니다.\n";
 	GameEngineDebug::OutPutDebugString("Winsock 초기화를 실시합니다.\n");
 	if (SOCKET_ERROR == errorCode)
 	{
@@ -37,9 +39,11 @@ void GameEngineSocketServer::Initialize()
 
 void GameEngineSocketServer::OpenServer()
 {
+	std::cout << "서버를 엽니다.\n";
 	GameEngineDebug::OutPutDebugString("서버를 엽니다.\n");
 	if (serverSocket_ != 0)
 	{
+		std::cout << "서버가 이미 열려있습니다.\n";
 		GameEngineDebug::OutPutDebugString("서버가 이미 열려있습니다.\n");
 		return;
 	}
@@ -47,6 +51,7 @@ void GameEngineSocketServer::OpenServer()
 	serverSocket_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (INVALID_SOCKET == serverSocket_)
 	{
+		std::cout << "소켓 생성에 실패했습니다.\n";
 		GameEngineDebug::OutPutDebugString("소켓 생성에 실패했습니다.\n");
 		return;
 	}
@@ -58,21 +63,27 @@ void GameEngineSocketServer::OpenServer()
 
 	if (SOCKET_ERROR == inet_pton(AF_INET, "0.0.0.0", &address.sin_addr)) // 로컬 호스트
 	{
+		std::cout << "주소 초기화에 실패했습니다.\n";
 		GameEngineDebug::OutPutDebugString("주소 초기화에 실패했습니다.\n");
 		return;
 	}
 
 	if (SOCKET_ERROR == bind(serverSocket_, (const sockaddr*)&address, sizeof(SOCKADDR_IN)))
 	{
+		std::cout << "ERROR: 소켓에 IP주소와 포트를 바인드 할 수 없습니다.\n";
 		GameEngineDebug::OutPutDebugString("ERROR: 소켓에 IP주소와 포트를 바인드 할 수 없습니다.\n");
 		return;
 	}
 
 	if (SOCKET_ERROR == listen(serverSocket_, 512))
 	{
+		std::cout << "ERROR: 리슨 상태로 전환할 수 없습니다.\n";
 		GameEngineDebug::OutPutDebugString("ERROR: 리슨 상태로 전환할 수 없습니다.\n");
 		return;
 	}
+
+	std::cout << "서버를 열었습니다.\n";
+	GameEngineDebug::OutPutDebugString("서버를 열었습니다.\n");
 
 	acceptThread_ = new std::thread(std::bind(&GameEngineSocketServer::acceptFunction, this));
 }
@@ -126,23 +137,24 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 
 		if (SOCKET_ERROR == Result)
 		{
-			
+			std::cout << "클라이언트의 접속이 종료되었습니다.\n";
 			GameEngineDebug::OutPutDebugString("클라이언트의 접속이 종료되었습니다.\n");
 
 			locker_.lock();
 			std::vector<SOCKET>::iterator findSocketIter = std::find(clientSocketList_.begin(), clientSocketList_.end(), _clientSocket);
 			SOCKET findSocket = *findSocketIter;
 			clientSocketList_.erase(findSocketIter);
-			
+
 			auto findThreadIter = clientReceiveThreadList_.find(findSocket);
 			findThreadIter->second.detach();
 
 			clientReceiveThreadList_.erase(findThreadIter);
-		
+
 			locker_.unlock();
 			return;
 		}
 
+		std::cout << packet << std::endl;
 		broadcast(packet);
 
 		ZeroMemory(packet, PACKET_SIZE);

@@ -50,8 +50,8 @@ void GameEngineSocketClient::Connect(const std::string& _ip)
 {
 	if (socket_ != 0)
 	{
-		std::cout << "서버가 이미 열려있습니다.\n";
-		GameEngineDebug::OutPutDebugString("서버가 이미 열려있습니다.\n");
+		std::cout << "서버에 이미 연결되어 있습니다.\n";
+		GameEngineDebug::OutPutDebugString("서버에 이미 연결되어 있습니다.\n");
 		return;
 	}
 
@@ -84,6 +84,8 @@ void GameEngineSocketClient::Connect(const std::string& _ip)
 	}
 
 	// 연결이 됐다면? 전송 스레드, 대기 스레드
+	std::cout << "서버에 연결되었습니다.\n";
+	GameEngineDebug::OutPutDebugString("서버에 연결되었습니다.\n");
 	bConneted_ = true;
 	if (receiveThread_ == nullptr)
 	{
@@ -100,7 +102,6 @@ void GameEngineSocketClient::Disconnect()
 		return;
 	}
 
-	shutdown(socket_, SD_BOTH);
 	closesocket(socket_);
 
 	if (nullptr != receiveThread_)
@@ -123,14 +124,8 @@ void GameEngineSocketClient::receiveFunction(SOCKET& _clientSocket)
 
 		if (SOCKET_ERROR == Result)
 		{
-			std::cout << "서버로부터 연결이 종료되었습니다.\n";
-			GameEngineDebug::OutPutDebugString("서버로부터 연결이 종료되었습니다.\n");
-			return;
-		}
-		else if (WSAESHUTDOWN == Result)
-		{
-			std::cout << "연결을 종료했습니다.\n";
-			GameEngineDebug::OutPutDebugString("연결을 종료했습니다.\n");
+			std::cout << "연결이 종료되었습니다.\n";
+			GameEngineDebug::OutPutDebugString("연결이 종료되었습니다.\n");
 			return;
 		}
 
