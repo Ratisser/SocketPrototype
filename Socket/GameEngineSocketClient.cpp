@@ -112,9 +112,19 @@ void GameEngineSocketClient::Disconnect()
 	socket_ = 0;
 }
 
-void GameEngineSocketClient::Send(const GameEnginePacket* _packet)
+void GameEngineSocketClient::Send(GameEnginePacketBase* _packet)
 {
+	if (0 == socket_)
+	{
+		std::cout << "서버에 연결되지 않았습니다.\n";
+		GameEngineDebug::OutPutDebugString("서버에 연결되지 않았습니다.\n");
+	}
 
+	_packet->Serialize();
+	char data[PACKET_SIZE];
+	ZeroMemory(data, PACKET_SIZE);
+	memcpy(data, _packet->GetSerializerDataPtr(), _packet->GetSerializerSize());
+	send(socket_, data, PACKET_SIZE, 0);
 }
 
 void GameEngineSocketClient::receiveFunction(SOCKET& _clientSocket)

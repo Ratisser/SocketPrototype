@@ -5,12 +5,13 @@
 
 class GameEngineSerializer
 {
-private:
-	unsigned int Offset_;
-	std::vector<unsigned char> Data_;
+public:
+	GameEngineSerializer();
+	GameEngineSerializer(const std::vector<unsigned char>& _Data);
+	GameEngineSerializer(const char* _Data, unsigned int _Size);
 
 public:
-	unsigned int GetOffSet() 
+	unsigned int GetOffSet()
 	{
 		return Offset_;
 	}
@@ -19,6 +20,8 @@ public:
 	{
 		Offset_ = 0;
 	}
+	void Write(const void* Data, unsigned int _Size);
+	void Read(void* Data, unsigned int _Size);
 
 	void Reset()
 	{
@@ -142,11 +145,10 @@ public:
 
 
 
-	void Write(const void* Data, unsigned int _Size);
 
-	void Read(void* Data, unsigned int _Size);
 
-	GameEngineSerializer();
-	GameEngineSerializer(const std::vector<unsigned char>& _Data);
-	GameEngineSerializer(const char* _Data, unsigned int _Size);
+private:
+	unsigned int Offset_;
+	std::vector<unsigned char> Data_;
+
 };

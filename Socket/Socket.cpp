@@ -5,14 +5,19 @@
 #include <conio.h>
 #include "GameEngineSocketServer.h"
 #include "GameEngineSocketClient.h"
+#include "GameEngineSerializer.h"
 
 #include <Windows.h>
+#include "GameEngineDebug.h"
+#include "ChattingPacket.h"
 
-#define SERVER
+//#define SERVER
 
-#ifdef SERVER
+
 int main()
 {
+	GameEngineDebug::LeakCheckOn();
+#ifdef SERVER
 	GameEngineSocketServer server;
 	server.Initialize();
 	server.OpenServer();
@@ -31,10 +36,7 @@ int main()
 	server.CloseServer();
 
 	system("pause");
-}
 #else
-int main()
-{
 	GameEngineSocketClient c;
 	c.Initialize();
 	c.Connect("121.129.74.58");
@@ -43,19 +45,25 @@ int main()
 	while (true)
 	{
 		Sleep(1);
-		int input = _getch();
-		if (input == 'q')
+		std::string text;
+		std::cin >> text;
+		if (text == "q")
 		{
 			break;
+		}
+		else if (text.size() > 0)
+		{
+			ChattingPacket* newPacket = new ChattingPacket();
+			newPacket->SetText(text);
+			c.Send(newPacket);
+			delete newPacket;
 		}
 	}
 
 	c.Disconnect();
 	system("pause");
-}
-
 #endif // DEBUG
-
+}
 
 
 

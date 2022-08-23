@@ -1,9 +1,11 @@
 #include "GameEngineSocketServer.h"
 
-#include "GameEngineDebug.h"
 #include <algorithm>
 #include <functional>
 #include <iostream>
+
+#include "GameEngineDebug.h"
+#include "GameEnginePacketHandler.h"
 
 GameEngineSocketServer::GameEngineSocketServer()
 	: serverSocket_(0)
@@ -157,9 +159,14 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 
 	while (true)
 	{
-		int Result = recv(_clientSocket, packet, sizeof(packet), 0);
+		int result = recv(_clientSocket, packet, sizeof(packet), 0);
 
-		if (SOCKET_ERROR == Result)
+		if (0 < result)
+		{
+			GameEnginePacketBase* newPacket = GameEnginePacketHandler::GetInstance().AnalyzePacket(packet, result);
+			GameEnginePacketHandler::GetInstance().PushPacket(newPacket);
+		}
+		else if (SOCKET_ERROR == result)
 		{
 			std::cout << "클라이언트의 접속이 종료되었습니다.\n";
 			GameEngineDebug::OutPutDebugString("클라이언트의 접속이 종료되었습니다.\n");

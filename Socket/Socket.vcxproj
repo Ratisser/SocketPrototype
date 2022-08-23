@@ -131,18 +131,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChattingPacket.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameEngineDebug.cpp" />
     <ClCompile Include="GameEngineMath.cpp" />
-    <ClCompile Include="GameEnginePacket.cpp" />
+    <ClCompile Include="GameEnginePacketBase.cpp" />
+    <ClCompile Include="GameEnginePacketHandler.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameEngineSerializer.cpp" />
     <ClCompile Include="GameEngineSocketClient.cpp" />
     <ClCompile Include="GameEngineSocketServer.cpp" />
     <ClCompile Include="Socket.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChattingPacket.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameEngineDebug.h" />
     <ClInclude Include="GameEngineMath.h" />
-    <ClInclude Include="GameEnginePacket.h" />
+    <ClInclude Include="GameEnginePacketBase.h" />
+    <ClInclude Include="GameEnginePacketHandler.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameEngineSerializer.h" />
     <ClInclude Include="GameEngineSocketClient.h" />
     <ClInclude Include="GameEngineSocketServer.h" />

@@ -11,7 +11,9 @@
 
 #include <iostream>
 
-class GameEnginePacket;
+#include "GameEnginePacketBase.h"
+
+class GameEnginePacketBase;
 class GameEngineSocketClient
 {
 public:
@@ -27,7 +29,7 @@ public:
 	void Connect(const std::string& _ip);
 	void Disconnect();
 
-	void Send(const GameEnginePacket* _packet);
+	void Send(GameEnginePacketBase* _packet);
 
 private:
 	void receiveFunction(SOCKET& _clientSocket);

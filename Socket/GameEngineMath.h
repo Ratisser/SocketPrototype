@@ -107,7 +107,7 @@ public:
 	// 역함수 : cos세타에서 cos을 제외하고 라디안(각도)값을 도출
 	static float Dot3DToCosAngle(float4 _Left, float4 _Right)
 	{
-		return acos(Dot3DToCos(_Left, _Right));
+		return acosf(Dot3DToCos(_Left, _Right));
 	}
 
 	// 3차원 회전

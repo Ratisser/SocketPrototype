@@ -19,16 +19,16 @@
     <Filter Include="소스 파일\Base">
       <UniqueIdentifier>{36fe2303-ca24-4eea-9d66-a77be11cfb73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Network\Packet">
+      <UniqueIdentifier>{cccd2238-1ca7-49db-9f21-a7c77e2a4071}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Network\Packet\UserPacket">
+      <UniqueIdentifier>{63b7ca3a-74e7-4cca-b053-d4a3726477a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket.cpp">
       <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEnginePacket.cpp">
-      <Filter>소스 파일\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngineSerializer.cpp">
-      <Filter>소스 파일\Network</Filter>
     </ClCompile>
     <ClCompile Include="GameEngineSocketClient.cpp">
       <Filter>소스 파일\Network</Filter>
@@ -42,14 +42,20 @@
     <ClCompile Include="GameEngineMath.cpp">
       <Filter>소스 파일\Base</Filter>
     </ClCompile>
+    <ClCompile Include="GameEnginePacketBase.cpp">
+      <Filter>소스 파일\Network\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngineSerializer.cpp">
+      <Filter>소스 파일\Network\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEnginePacketHandler.cpp">
+      <Filter>소스 파일\Network\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="ChattingPacket.cpp">
+      <Filter>소스 파일\Network\Packet\UserPacket</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameEnginePacket.h">
-      <Filter>소스 파일\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngineSerializer.h">
-      <Filter>소스 파일\Network</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngineSocketClient.h">
       <Filter>소스 파일\Network</Filter>
     </ClInclude>
@@ -61,6 +67,18 @@
     </ClInclude>
     <ClInclude Include="GameEngineMath.h">
       <Filter>소스 파일\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEnginePacketBase.h">
+      <Filter>소스 파일\Network\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngineSerializer.h">
+      <Filter>소스 파일\Network\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEnginePacketHandler.h">
+      <Filter>소스 파일\Network\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="ChattingPacket.h">
+      <Filter>소스 파일\Network\Packet\UserPacket</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
