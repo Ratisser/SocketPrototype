@@ -128,6 +128,14 @@ void GameEngineSocketClient::ProcessPacket()
 	}
 }
 
+void GameEngineSocketClient::AddPacketHandler(int _packetID, GameEnginePacketBase* _packetObject)
+{
+	if (packetHandler_ != nullptr)
+	{
+		packetHandler_->AddHandler(_packetID, _packetObject);
+	}
+}
+
 void GameEngineSocketClient::receiveFunction(SOCKET _clientSocket)
 {
 	char packet[PACKET_SIZE] = { 0 };

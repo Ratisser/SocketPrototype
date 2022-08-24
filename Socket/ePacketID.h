@@ -4,5 +4,6 @@ enum class ePacketID
 {
 	None = 0,
 	Chat = 1,
-	Chat2
+	Chat2,
+	Chat3
 };

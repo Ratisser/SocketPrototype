@@ -60,6 +60,9 @@
     <ClCompile Include="ChattingPacket2.cpp">
       <Filter>소스 파일\Network\Packet\UserPacket</Filter>
     </ClCompile>
+    <ClCompile Include="ChattingPacket3.cpp">
+      <Filter>소스 파일\Network\Packet\UserPacket</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngineDebug.h">
@@ -93,6 +96,9 @@
       <Filter>소스 파일\Network\Packet</Filter>
     </ClInclude>
     <ClInclude Include="ChattingPacket2.h">
+      <Filter>소스 파일\Network\Packet\UserPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="ChattingPacket3.h">
       <Filter>소스 파일\Network\Packet\UserPacket</Filter>
     </ClInclude>
   </ItemGroup>

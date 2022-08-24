@@ -38,6 +38,11 @@ public:
 	// 저장된 패킷을 실행합니다.
 	void ProcessPacket();
 
+	void AddPacketHandler(int _packetID, GameEnginePacketBase* _packetObject);
+
+	template<typename T>
+	void AddPacketHandler(T _packetID, GameEnginePacketBase* _packetObject);
+
 public:
 	bool IsConnected() { return bConneted_; }
 
@@ -55,3 +60,8 @@ private:
 	GameEnginePacketHandler* packetHandler_;
 };
 
+template<typename T>
+inline void GameEngineSocketClient::AddPacketHandler(T _packetID, GameEnginePacketBase* _packetObject)
+{
+	AddPacketHandler(static_cast<int>(_packetID), _packetObject);
+}

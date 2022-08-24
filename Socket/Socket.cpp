@@ -12,7 +12,10 @@
 #include "GameEnginePacketHandler.h"
 
 #include <conio.h>
-//#define SERVER
+#include "ChattingPacket2.h"
+#include "ChattingPacket3.h"
+
+#define SERVER
 
 int main()
 {
@@ -20,7 +23,12 @@ int main()
 #ifdef SERVER
 	GameEngineSocketServer server;
 	server.Initialize();
+
 	server.OpenServer();
+	server.AddPacketHandler(ePacketID::Chat, new ChattingPacket);
+	server.AddPacketHandler(ePacketID::Chat2, new ChattingPacket2);
+	server.AddPacketHandler(ePacketID::Chat3, new ChattingPacket3);
+
 
 	while (true)
 	{
@@ -40,7 +48,12 @@ int main()
 #else
 	GameEngineSocketClient c;
 	c.Initialize();
+
 	c.Connect("121.129.74.58");
+
+	c.AddPacketHandler(ePacketID::Chat, new ChattingPacket);
+	c.AddPacketHandler(ePacketID::Chat2, new ChattingPacket2);
+	c.AddPacketHandler(ePacketID::Chat3, new ChattingPacket3);
 
 	auto lambda = [&]()
 	{
@@ -64,7 +77,7 @@ int main()
 		}
 		else if (text.size() > 0)
 		{
-			ChattingPacket* newPacket = new ChattingPacket();
+			ChattingPacket3* newPacket = new ChattingPacket3();
 			newPacket->SetText(text);
 			c.Send(newPacket);
 			delete newPacket;

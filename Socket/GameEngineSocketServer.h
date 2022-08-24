@@ -33,6 +33,11 @@ public:
 	// 연결된 클라이언트들에게 패킷을 전송합니다.
 	void Send(GameEnginePacketBase* _packet) override;
 
+	void AddPacketHandler(int _packetID, GameEnginePacketBase* _packetObject);
+
+	template<typename T>
+	void AddPacketHandler(T _packetID, GameEnginePacketBase* _packetObject);
+
 public:
 	bool IsOpened() { return bOpen_; }
 
@@ -56,3 +61,8 @@ private:
 	GameEnginePacketHandler* packetHandler_;
 };
 
+template<typename T>
+inline void GameEngineSocketServer::AddPacketHandler(T _packetID, GameEnginePacketBase* _packetObject)
+{
+	AddPacketHandler(static_cast<int>(_packetID), _packetObject);
+}

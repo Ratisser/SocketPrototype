@@ -23,7 +23,7 @@ void ChattingPacket::userDeserialize()
 
 void ChattingPacket::initPacketID()
 {
-	packetID_ = ePacketID::Chat;
+	SetPacketID(ePacketID::Chat);
 }
 
 GameEnginePacketBase* ChattingPacket::getUserObject()

@@ -21,15 +21,18 @@ public:
 	void Deserialize();
 
 public:
-	ePacketID				GetPacketID()				{ return packetID_; }
+	int						GetPacketID()				{ return packetID_; }
 	int						GetPacketSize()				{ return packetSize_; }
 
 	GameEngineSerializer&	GetSerializer()				{ return serializer_; }
 
-	void					SetPacketID(ePacketID _id)	{ packetID_ = _id; }
+	void					SetPacketID(int _id)		{ packetID_ = _id; }
 	void					SetPacketSize(int _size)	{ packetSize_ = _size; }
 
 	GameEnginePacketBase*	GetNewObject()				{ return getUserObject(); }
+
+	template<typename T>
+	void SetPacketID(T _id);
 
 protected:
 	// 여기서 packetID_ 를 초기화 해 주세요.
@@ -43,8 +46,13 @@ protected:
 	virtual void execute(bool _bServer, GameEngineSocketInterface* _network) = 0;
 
 protected:
-	ePacketID packetID_;
+	int packetID_;
 	int packetSize_;
 	GameEngineSerializer serializer_;
 };
 
+template<typename T>
+inline void GameEnginePacketBase::SetPacketID(T _id)
+{
+	packetID_ = static_cast<int>(_id);
+}

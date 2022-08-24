@@ -1,7 +1,7 @@
 #include "GameEnginePacketBase.h"
 
 GameEnginePacketBase::GameEnginePacketBase()
-	: packetID_(ePacketID::None)
+	: packetID_(-1)
 	, packetSize_(0)
 {
 

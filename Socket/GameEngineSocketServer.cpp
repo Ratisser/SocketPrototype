@@ -86,7 +86,6 @@ void GameEngineSocketServer::OpenServer()
 	bOpen_ = true;
 	packetHandler_ = new GameEnginePacketHandler(true);
 	acceptThread_ = new std::thread(std::bind(&GameEngineSocketServer::acceptFunction, this));
-
 }
 
 void GameEngineSocketServer::CloseServer()
@@ -156,6 +155,14 @@ void GameEngineSocketServer::Send(GameEnginePacketBase* _packet)
 		send(clientSocket, sendData, PACKET_SIZE, 0);
 	}
 	locker_.unlock();
+}
+
+void GameEngineSocketServer::AddPacketHandler(int _packetID, GameEnginePacketBase* _packetObject)
+{
+	if (packetHandler_ != nullptr)
+	{
+		packetHandler_->AddHandler(_packetID, _packetObject);
+	}
 }
 
 void GameEngineSocketServer::acceptFunction()
