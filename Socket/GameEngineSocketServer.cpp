@@ -6,24 +6,19 @@
 
 #include "GameEngineDebug.h"
 #include "GameEnginePacketHandler.h"
+#include "GameEnginePacketBase.h"
 
 GameEngineSocketServer::GameEngineSocketServer()
 	: serverSocket_(0)
 	, acceptThread_(nullptr)
 	, bOpen_(false)
+	, packetHandler_(nullptr)
 {
 }
 
 GameEngineSocketServer::~GameEngineSocketServer()
 {
-	if (nullptr != acceptThread_)
-	{
-		closesocket(serverSocket_);
-		serverSocket_ = 0;
-		acceptThread_->join();
-		delete acceptThread_;
-		acceptThread_ = nullptr;
-	}
+	CloseServer();
 }
 
 void GameEngineSocketServer::Initialize()
@@ -89,6 +84,7 @@ void GameEngineSocketServer::OpenServer()
 	GameEngineDebug::OutPutDebugString("서버를 열었습니다.\n");
 
 	bOpen_ = true;
+	packetHandler_ = new GameEnginePacketHandler(true);
 	acceptThread_ = new std::thread(std::bind(&GameEngineSocketServer::acceptFunction, this));
 
 }
@@ -121,9 +117,45 @@ void GameEngineSocketServer::CloseServer()
 
 	while (startIter != endIter)
 	{
-		startIter->second.join();
+		if (startIter->second.joinable())
+		{
+			startIter->second.join();
+		}
 		startIter++;
 	}
+
+	if (nullptr != packetHandler_)
+	{
+		delete packetHandler_;
+		packetHandler_ = nullptr;
+	}
+}
+
+void GameEngineSocketServer::ProcessPacket()
+{
+	if (nullptr != packetHandler_)
+	{
+		packetHandler_->ProcessPacket(this);
+	}
+}
+
+void GameEngineSocketServer::Send(GameEnginePacketBase* _packet)
+{
+	if (_packet->GetSerializer().GetOffSet() == 0)
+	{
+		_packet->Serialize();
+	}
+
+	char sendData[PACKET_SIZE] = { 0, };
+
+	memcpy(sendData, _packet->GetSerializer().GetDataPtr(), _packet->GetSerializer().GetOffSet());
+
+	locker_.lock();
+	for (auto clientSocket : clientSocketList_)
+	{
+		send(clientSocket, sendData, PACKET_SIZE, 0);
+	}
+	locker_.unlock();
 }
 
 void GameEngineSocketServer::acceptFunction()
@@ -146,14 +178,14 @@ void GameEngineSocketServer::acceptFunction()
 
 		clientSocketList_.push_back(socketNewUser);
 
-		std::thread newReceiveThread(std::bind(&GameEngineSocketServer::receiveFunction, this, std::ref(socketNewUser)));
+		std::thread newReceiveThread(std::bind(&GameEngineSocketServer::receiveFunction, this, socketNewUser));
 		clientReceiveThreadList_.insert(std::pair<SOCKET, std::thread>(socketNewUser, std::move(newReceiveThread)));
 
 		locker_.unlock();
 	}
 }
 
-void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
+void GameEngineSocketServer::receiveFunction(SOCKET _clientSocket)
 {
 	char packet[PACKET_SIZE] = { 0 };
 
@@ -163,8 +195,7 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 
 		if (0 < result)
 		{
-			GameEnginePacketBase* newPacket = GameEnginePacketHandler::GetInstance().AnalyzePacket(packet, result);
-			GameEnginePacketHandler::GetInstance().PushPacket(newPacket);
+			packetHandler_->AnalyzePacketAndPush(packet, result);
 		}
 		else if (SOCKET_ERROR == result)
 		{
@@ -186,6 +217,7 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 				{
 					clientSocketList_[i] = clientSocketList_.back();
 					clientSocketList_.pop_back();
+					break;
 				}
 			}
 
@@ -203,19 +235,6 @@ void GameEngineSocketServer::receiveFunction(SOCKET& _clientSocket)
 			return;
 		}
 
-		std::cout << packet << std::endl;
-		broadcast(packet);
-
 		ZeroMemory(packet, PACKET_SIZE);
 	}
-}
-
-void GameEngineSocketServer::broadcast(char _packet[])
-{
-	locker_.lock();
-	for (auto clientSocket : clientSocketList_)
-	{
-		send(clientSocket, _packet, PACKET_SIZE, 0);
-	}
-	locker_.unlock();
 }

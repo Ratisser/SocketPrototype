@@ -2,33 +2,19 @@
 #include "GameEngineDebug.h"
 
 #include <functional>
+#include "GameEnginePacketHandler.h"
 
 GameEngineSocketClient::GameEngineSocketClient()
 	: socket_(0)
 	, bConneted_(false)
 	, receiveThread_(nullptr)
+	, packetHandler_(nullptr)
 {
 }
 
 GameEngineSocketClient::~GameEngineSocketClient()
 {
-	if (socket_ == 0)
-	{
-		std::cout << "연결된 서버가 없습니다.\n";
-		GameEngineDebug::OutPutDebugString("연결된 서버가 없습니다.\n");
-		return;
-	}
-
-	shutdown(socket_, SD_BOTH);
-	closesocket(socket_);
-
-	if (nullptr != receiveThread_)
-	{
-		receiveThread_->join();
-		delete receiveThread_;
-		receiveThread_ = nullptr;
-	}
-	socket_ = 0;
+	Disconnect();
 }
 
 void GameEngineSocketClient::Initialize()
@@ -86,6 +72,7 @@ void GameEngineSocketClient::Connect(const std::string& _ip)
 	std::cout << "서버에 연결되었습니다.\n";
 	GameEngineDebug::OutPutDebugString("서버에 연결되었습니다.\n");
 	bConneted_ = true;
+	packetHandler_ = new GameEnginePacketHandler(false);
 	if (receiveThread_ == nullptr)
 	{
 		receiveThread_ = new std::thread(std::bind(&GameEngineSocketClient::receiveFunction, this, socket_));
@@ -110,6 +97,12 @@ void GameEngineSocketClient::Disconnect()
 		receiveThread_ = nullptr;
 	}
 	socket_ = 0;
+
+	if (nullptr != packetHandler_)
+	{
+		delete packetHandler_;
+		packetHandler_ = nullptr;
+	}
 }
 
 void GameEngineSocketClient::Send(GameEnginePacketBase* _packet)
@@ -123,27 +116,38 @@ void GameEngineSocketClient::Send(GameEnginePacketBase* _packet)
 	_packet->Serialize();
 	char data[PACKET_SIZE];
 	ZeroMemory(data, PACKET_SIZE);
-	memcpy(data, _packet->GetSerializerDataPtr(), _packet->GetSerializerSize());
+	memcpy(data, _packet->GetSerializer().GetDataPtr(), _packet->GetSerializer().GetOffSet());
 	send(socket_, data, PACKET_SIZE, 0);
 }
 
-void GameEngineSocketClient::receiveFunction(SOCKET& _clientSocket)
+void GameEngineSocketClient::ProcessPacket()
+{
+	if (nullptr != packetHandler_)
+	{
+		packetHandler_->ProcessPacket(this);
+	}
+}
+
+void GameEngineSocketClient::receiveFunction(SOCKET _clientSocket)
 {
 	char packet[PACKET_SIZE] = { 0 };
 
 	while (true)
 	{
 
-		int Result = recv(_clientSocket, packet, sizeof(packet), 0);
+		int result = recv(_clientSocket, packet, sizeof(packet), 0);
+		if (0 < result)
+		{
+			packetHandler_->AnalyzePacketAndPush(packet, result);
+		}
 
-		if (SOCKET_ERROR == Result)
+		if (SOCKET_ERROR == result)
 		{
 			std::cout << "연결이 종료되었습니다.\n";
 			GameEngineDebug::OutPutDebugString("연결이 종료되었습니다.\n");
 			return;
 		}
 
-		std::cout << packet << std::endl;
 		ZeroMemory(packet, PACKET_SIZE);
 	}
 }

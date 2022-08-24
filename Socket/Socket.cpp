@@ -2,7 +2,6 @@
 //
 
 #include <iostream>
-#include <conio.h>
 #include "GameEngineSocketServer.h"
 #include "GameEngineSocketClient.h"
 #include "GameEngineSerializer.h"
@@ -10,9 +9,11 @@
 #include <Windows.h>
 #include "GameEngineDebug.h"
 #include "ChattingPacket.h"
+#include "GameEnginePacketHandler.h"
 
-//#define SERVER
+#include <conio.h>
 
+#define SERVER
 
 int main()
 {
@@ -26,8 +27,10 @@ int main()
 	while (true)
 	{
 		Sleep(1);
-		int input = _getch();
-		if (input == 'q')
+		int input = 0;
+		input = GetAsyncKeyState('Q');
+		server.ProcessPacket();
+		if (input)
 		{
 			break;
 		}
@@ -35,19 +38,29 @@ int main()
 
 	server.CloseServer();
 
-	system("pause");
+	//system("pause");
 #else
 	GameEngineSocketClient c;
 	c.Initialize();
 	c.Connect("121.129.74.58");
 
+	auto lambda = [&]()
+	{
+		while (c.IsConnected())
+		{
+			c.ProcessPacket();
+		}
+	};
+
+	std::thread t(lambda);
 
 	while (true)
 	{
-		Sleep(1);
+		Sleep(50);
+
 		std::string text;
 		std::cin >> text;
-		if (text == "q")
+		if (text == "q" || !c.IsConnected())
 		{
 			break;
 		}
@@ -57,10 +70,11 @@ int main()
 			newPacket->SetText(text);
 			c.Send(newPacket);
 			delete newPacket;
-		}
+}
 	}
 
 	c.Disconnect();
+	t.join();
 	system("pause");
 #endif // DEBUG
 }

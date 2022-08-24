@@ -15,13 +15,17 @@ public:
 public:
 	void SetText(std::string& _text);
 	std::string GetText() { return text_; }
+
 protected:
-	virtual void setPacketID();
 	virtual void userSerialize() override;
 	virtual void userDeserialize() override;
+	virtual void initPacketID() override;
+	virtual GameEnginePacketBase* getUserObject() override;
+	virtual void execute(bool _bServer, GameEngineSocketInterface* _network) override;
 
 private:
 	enum { MAX_TEXT_SIZE = 512 };
 	std::string text_;
+
 };
 

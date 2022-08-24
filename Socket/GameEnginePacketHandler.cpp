@@ -1,68 +1,82 @@
 #include "GameEnginePacketHandler.h"
 
-#include "ChattingPacket.h"
 #include <iostream>
 
-GameEnginePacketHandler::GameEnginePacketHandler()
-{
+#include "ChattingPacket.h"
+#include "ePacketID.h"
 
+GameEnginePacketHandler::GameEnginePacketHandler(bool _bServer)
+	: bServer_(_bServer)
+{
+	// 최초 부모 더미를 생성해줌
+	parents_[ePacketID::Chat] = new ChattingPacket;
 }
 
 GameEnginePacketHandler::~GameEnginePacketHandler()
 {
+	while (!packetQueue_.empty())
+	{
+		GameEnginePacketBase* p = packetQueue_.front();
+		delete p;
+		packetQueue_.pop();
+	}
 
+	for (auto p : parents_)
+	{
+		delete p.second;
+	}
+
+	parents_.clear();
 }
 
-GameEnginePacketBase* GameEnginePacketHandler::AnalyzePacket(char* _data, int _size)
+void GameEnginePacketHandler::AnalyzePacketAndPush(char* _data, int _size)
 {
-	int packetID = 0;
+	GameEnginePacketBase* analyzedPacket = nullptr;
+
+	ePacketID packetID = ePacketID::None;
 	int packetSize = 0;
 
-	memcpy(&packetID, _data, sizeof(int));
-	memcpy(&packetSize, _data + 4, sizeof(int));
+	// 패킷 헤더를 가져옵니다.
+	memcpy(&packetID, _data, sizeof(ePacketID));
+	memcpy(&packetSize, _data + sizeof(ePacketID), sizeof(int));
 
-	GameEnginePacketBase* newPacket = new GameEnginePacketBase(_data, _size);
-	newPacket->SetPacketID(packetID);
 
-	return newPacket;
+	// 부모 맵에서 찾으면 객체를 생성해 주는 구조 입니다.
+	auto findIter = parents_.find(packetID);
+	if (findIter != parents_.end())
+	{
+		analyzedPacket = findIter->second->GetNewObject();
+	}
+
+	// 부모 맵에서 찾아왔다면 
+	if (nullptr != analyzedPacket)
+	{
+		analyzedPacket->GetSerializer().SetDataPtr(_data, _size);
+		analyzedPacket->SetPacketID(packetID);
+		PushPacket(analyzedPacket);
+	}
 }
 
 void GameEnginePacketHandler::PushPacket(GameEnginePacketBase* packet)
 {
 	locker_.lock();
-	packetList_.push_back(packet);
+	packetQueue_.push(packet);
 	locker_.unlock();
 }
 
-void GameEnginePacketHandler::ProcessPacket()
-{
-	locker_.lock();
+void GameEnginePacketHandler::ProcessPacket(GameEngineSocketInterface* _network)
+{ 
+	// 패킷 처리중에 패킷을 추가하면 안 되므로 잠근다.
+	std::lock_guard<std::mutex> lg(locker_);
 
-	if (!packetList_.empty())
+	while (!packetQueue_.empty())
 	{
-		GameEnginePacketBase* packet = packetList_.back();
-		packetList_.pop_back();
+		GameEnginePacketBase* packet = packetQueue_.front();
+		packetQueue_.pop();
 
-		switch (packet->GetPacketID())
-		{
-		case 1:
-		{
-			ChattingPacket* chatPacket = dynamic_cast<ChattingPacket*>(packet);
-			if (nullptr != chatPacket)
-			{
-				chatPacket->Deserialize();
-				std::cout << chatPacket->GetText() << std::endl;
+		packet->Deserialize();
+		packet->execute(bServer_, _network);
 
-				delete chatPacket;
-			}
-		}
-		break;
-		default:
-			break;
-		}
+		delete packet;
 	}
-
-
-
-	locker_.unlock();
 }

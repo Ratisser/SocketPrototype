@@ -1,12 +1,15 @@
 #pragma once
 
+#include "ePacketID.h"
 #include "GameEngineSerializer.h"
+#include "GameEngineSocketInterface.h"
 
+class GameEnginePacketHandler;
 class GameEnginePacketBase
 {
+	friend GameEnginePacketHandler;
 public:
 	GameEnginePacketBase();
-	GameEnginePacketBase(char* _data, int _size);
 	virtual ~GameEnginePacketBase();
 	GameEnginePacketBase(const GameEnginePacketBase& _other) = delete; 
 	GameEnginePacketBase(GameEnginePacketBase&& _other) = delete; 
@@ -17,22 +20,29 @@ public:
 	void Serialize();
 	void Deserialize();
 
-	unsigned char* GetSerializerDataPtr() { return serializer_.GetDataPtr(); }
-	unsigned int GetSerializerSize() { return serializer_.GetOffSet(); }
+public:
+	ePacketID				GetPacketID()				{ return packetID_; }
+	int						GetPacketSize()				{ return packetSize_; }
 
-	int GetPacketID() { return packetID_; }
-	int GetPacketSize() { return packetSize_; }
+	GameEngineSerializer&	GetSerializer()				{ return serializer_; }
 
-	void SetPacketID(int _id) { packetID_ = _id; }
-	void SetPacketSize(int _size) { packetSize_ = _size; }
+	void					SetPacketID(ePacketID _id)	{ packetID_ = _id; }
+	void					SetPacketSize(int _size)	{ packetSize_ = _size; }
+
+	GameEnginePacketBase*	GetNewObject()				{ return getUserObject(); }
 
 protected:
 	// 여기서 packetID_ 를 초기화 해 주세요.
-	virtual void userSerialize() {};
-	virtual void userDeserialize() {};
+	virtual void initPacketID() = 0;
+	virtual void userSerialize() = 0;
+	virtual void userDeserialize() = 0;
+	// 여기서 새로운 오브젝트를 반환 해 주세요.
+	virtual GameEnginePacketBase* getUserObject() = 0;
 
+	// 패킷이 할 행동을 정해주세요. bool 값은 서버에서 실행되는지에 대한 여부입니다.
+	virtual void execute(bool _bServer, GameEngineSocketInterface* _network) = 0;
 protected:
-	int packetID_;
+	ePacketID packetID_;
 	int packetSize_;
 	GameEngineSerializer serializer_;
 };

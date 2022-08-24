@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "GameEngineMath.h"
+#include "ePacketID.h"
 
 class GameEngineSerializer
 {
@@ -11,36 +12,20 @@ public:
 	GameEngineSerializer(const char* _Data, unsigned int _Size);
 
 public:
-	unsigned int GetOffSet()
-	{
-		return Offset_;
-	}
-
-	void OffsetReset()
-	{
-		Offset_ = 0;
-	}
 	void Write(const void* Data, unsigned int _Size);
 	void Read(void* Data, unsigned int _Size);
 
-	void Reset()
-	{
-		Offset_ = 0;
-		Data_.clear();
-		Data_.resize(1024);
-	}
+	void Reset();
+	void OffsetReset();
 
-	const std::vector<unsigned char>& GetData() {
-		return Data_;
-	}
+	void SetDataPtr(const char* _data, unsigned int _size);
 
-	unsigned char* GetDataPtr() {
-		return &Data_[0];
-	}
+	unsigned int GetOffSet() { return Offset_; }
+	const std::vector<unsigned char>& GetData() { return Data_; }
+	unsigned char* GetDataPtr() { return &Data_[0]; }
 
 public:
-	// 이걸 그냥
-	// 템플릿은 보통 좋은 선택이 아닙니다.
+	void operator<<(const ePacketID _value);
 	void operator<<(const std::string& _Value);
 	void operator<<(const int _Value);
 	void operator<<(const unsigned int _Value);
@@ -49,28 +34,14 @@ public:
 	void operator<<(const float4& _Value);
 
 	template<typename T>
-	void WriteEnum(const T _Value)
-	{
-		Write(reinterpret_cast<const void*>(&_Value), static_cast<unsigned int>(sizeof(T)));
-	}
+	void WriteEnum(const T _Value);
 
 	template<typename T>
-	void WriteUserData(const T _Value)
-	{
-		Write(reinterpret_cast<const void*>(&_Value), static_cast<unsigned int>(sizeof(T)));
-	}
+	void WriteUserData(const T _Value);
 
 
 	template<typename T>
-	void WriteVector(std::vector<T>& _Value)
-	{
-		operator<<(static_cast<int>(_Value.size()));
-		for (size_t i = 0; i < _Value.size(); i++)
-		{
-			_Value[i].Serialize(*this);
-			// Write(reinterpret_cast<const void*>(&_Value[i]), static_cast<unsigned int>(sizeof(T)));
-		}
-	}
+	void WriteVector(std::vector<T>& _Value);
 
 	void WriteVector(std::vector<std::string>& _Value)
 	{
@@ -90,6 +61,8 @@ public:
 		}
 	}
 
+
+	void operator>>(ePacketID& _value);
 	void operator>>(std::string& _Value);
 	void operator>>(int& _Value);
 	void operator>>(unsigned int& _Value);
@@ -152,3 +125,26 @@ private:
 	std::vector<unsigned char> Data_;
 
 };
+
+template<typename T>
+inline void GameEngineSerializer::WriteEnum(const T _Value)
+{
+	Write(reinterpret_cast<const void*>(&_Value), static_cast<unsigned int>(sizeof(T)));
+}
+
+template<typename T>
+inline void GameEngineSerializer::WriteUserData(const T _Value)
+{
+	Write(reinterpret_cast<const void*>(&_Value), static_cast<unsigned int>(sizeof(T)));
+}
+
+template<typename T>
+inline void GameEngineSerializer::WriteVector(std::vector<T>& _Value)
+{
+	operator<<(static_cast<int>(_Value.size()));
+	for (size_t i = 0; i < _Value.size(); i++)
+	{
+		_Value[i].Serialize(*this);
+		// Write(reinterpret_cast<const void*>(&_Value[i]), static_cast<unsigned int>(sizeof(T)));
+	}
+}

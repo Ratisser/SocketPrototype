@@ -152,6 +152,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="ePacketID.h" />
     <ClInclude Include="GameEngineDebug.h" />
     <ClInclude Include="GameEngineMath.h" />
     <ClInclude Include="GameEnginePacketBase.h" />
@@ -160,6 +161,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameEngineSerializer.h" />
+    <ClInclude Include="GameEngineSocketInterface.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameEngineSocketClient.h" />
     <ClInclude Include="GameEngineSocketServer.h" />
   </ItemGroup>

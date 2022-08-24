@@ -1,18 +1,10 @@
 #include "GameEnginePacketBase.h"
 
 GameEnginePacketBase::GameEnginePacketBase()
-	: packetID_(-1)
+	: packetID_(ePacketID::None)
 	, packetSize_(0)
 {
 
-}
-
-GameEnginePacketBase::GameEnginePacketBase(char* _data, int _size)
-	: packetID_(-1)
-	, packetSize_(_size)
-	, serializer_(_data, _size)
-{
-	
 }
 
 GameEnginePacketBase::~GameEnginePacketBase()
@@ -22,6 +14,7 @@ GameEnginePacketBase::~GameEnginePacketBase()
 
 void GameEnginePacketBase::Serialize()
 {
+	initPacketID();
 	serializer_ << packetID_;
 	serializer_ << serializer_.GetOffSet();
 	userSerialize();
