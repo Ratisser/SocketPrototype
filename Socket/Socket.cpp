@@ -12,8 +12,7 @@
 #include "GameEnginePacketHandler.h"
 
 #include <conio.h>
-
-#define SERVER
+//#define SERVER
 
 int main()
 {
@@ -22,7 +21,6 @@ int main()
 	GameEngineSocketServer server;
 	server.Initialize();
 	server.OpenServer();
-
 
 	while (true)
 	{

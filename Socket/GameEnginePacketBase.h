@@ -41,6 +41,7 @@ protected:
 
 	// 패킷이 할 행동을 정해주세요. bool 값은 서버에서 실행되는지에 대한 여부입니다.
 	virtual void execute(bool _bServer, GameEngineSocketInterface* _network) = 0;
+
 protected:
 	ePacketID packetID_;
 	int packetSize_;

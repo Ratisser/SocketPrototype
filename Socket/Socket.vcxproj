@@ -135,6 +135,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="ChattingPacket2.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameEngineDebug.cpp" />
     <ClCompile Include="GameEngineMath.cpp" />
     <ClCompile Include="GameEnginePacketBase.cpp" />
@@ -149,6 +153,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChattingPacket.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="ChattingPacket2.h">
       <SubType>
       </SubType>
     </ClInclude>

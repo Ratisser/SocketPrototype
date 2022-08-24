@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "ChattingPacket.h"
+#include "ChattingPacket2.h"
 #include "ePacketID.h"
 
 GameEnginePacketHandler::GameEnginePacketHandler(bool _bServer)
@@ -10,6 +11,7 @@ GameEnginePacketHandler::GameEnginePacketHandler(bool _bServer)
 {
 	// 최초 부모 더미를 생성해줌
 	parents_[ePacketID::Chat] = new ChattingPacket;
+	parents_[ePacketID::Chat2] = new ChattingPacket2;
 }
 
 GameEnginePacketHandler::~GameEnginePacketHandler()
@@ -75,6 +77,7 @@ void GameEnginePacketHandler::ProcessPacket(GameEngineSocketInterface* _network)
 		packetQueue_.pop();
 
 		packet->Deserialize();
+
 		packet->execute(bServer_, _network);
 
 		delete packet;
