@@ -37,6 +37,6 @@ void ChattingPacket3::execute(bool _bServer, GameEngineSocketInterface* _network
 
     if (_bServer)
     {
-        _network->Send(this);
+        _network->Send(GetSocketSender(), this);
     }
 }

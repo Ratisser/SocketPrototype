@@ -157,6 +157,28 @@ void GameEngineSocketServer::Send(GameEnginePacketBase* _packet)
 	locker_.unlock();
 }
 
+void GameEngineSocketServer::Send(SOCKET _receiver, GameEnginePacketBase* _packet)
+{
+	if (0 == _receiver)
+	{
+		std::cout << "전송받을 소켓이 비어있습니다.\n";
+		GameEngineDebug::OutPutDebugString("전송받을 소켓이 비어있습니다.\n");
+		return;
+	}
+
+	if (_packet->GetSerializer().GetOffSet() == 0)
+	{
+		_packet->Serialize();
+	}
+
+	char sendData[PACKET_SIZE] = { 0, };
+
+	memcpy(sendData, _packet->GetSerializer().GetDataPtr(), _packet->GetSerializer().GetOffSet());
+
+	send(_receiver, sendData, PACKET_SIZE, 0);
+}
+
+
 void GameEngineSocketServer::AddPacketHandler(int _packetID, GameEnginePacketBase* _packetObject)
 {
 	if (packetHandler_ != nullptr)
@@ -202,7 +224,7 @@ void GameEngineSocketServer::receiveFunction(SOCKET _clientSocket)
 
 		if (0 < result)
 		{
-			packetHandler_->AnalyzePacketAndPush(packet, result);
+			packetHandler_->AnalyzePacketAndPush(packet, result, _clientSocket);
 		}
 		else if (SOCKET_ERROR == result)
 		{
@@ -245,3 +267,4 @@ void GameEngineSocketServer::receiveFunction(SOCKET _clientSocket)
 		ZeroMemory(packet, PACKET_SIZE);
 	}
 }
+

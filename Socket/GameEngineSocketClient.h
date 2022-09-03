@@ -35,6 +35,7 @@ public:
 	void Disconnect();
 	// 서버에 데이터를 전송합니다.
 	void Send(GameEnginePacketBase* _packet) override;
+	void Send(SOCKET _receiver, GameEnginePacketBase* _packet) override;
 	// 저장된 패킷을 실행합니다.
 	void ProcessPacket();
 
@@ -47,7 +48,7 @@ public:
 	bool IsConnected() { return bConneted_; }
 
 private:
-	void receiveFunction(SOCKET _clientSocket);
+	void receiveFunction(SOCKET _serverSocket);
 
 private:
 	enum { PACKET_SIZE = 1024 };
@@ -58,6 +59,8 @@ private:
 	bool bConneted_;
 
 	GameEnginePacketHandler* packetHandler_;
+
+
 };
 
 template<typename T>

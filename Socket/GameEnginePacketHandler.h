@@ -19,7 +19,7 @@ public:
 	
 public:
 	// 패킷을 분석하고 푸쉬합니다.
-	void AnalyzePacketAndPush(char* _data, int _size);
+	void AnalyzePacketAndPush(char* _data, int _size, SOCKET _sender = 0);
 
 	// 패킷 오브젝트를 푸쉬합니다. 푸쉬된 오브젝트는 핸들러에서 생명주기를 관리합니다. (즉, 다른 곳에서 삭제하면 안 됩니다.)
 	void PushPacket(GameEnginePacketBase* _packet);

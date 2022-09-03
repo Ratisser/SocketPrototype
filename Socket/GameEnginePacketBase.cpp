@@ -3,6 +3,7 @@
 GameEnginePacketBase::GameEnginePacketBase()
 	: packetID_(-1)
 	, packetSize_(0)
+	, socketSender_(0)
 {
 
 }

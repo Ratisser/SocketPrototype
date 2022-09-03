@@ -29,5 +29,7 @@ protected:
 
 private:
 	std::string text_;
+	int id_;
+	float4 destination_;
 };
 

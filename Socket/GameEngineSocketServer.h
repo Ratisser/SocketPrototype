@@ -32,6 +32,7 @@ public:
 	void ProcessPacket();
 	// 연결된 클라이언트들에게 패킷을 전송합니다.
 	void Send(GameEnginePacketBase* _packet) override;
+	void Send(SOCKET _receiver, GameEnginePacketBase* _packet) override;
 
 	void AddPacketHandler(int _packetID, GameEnginePacketBase* _packetObject);
 
@@ -59,6 +60,7 @@ private:
 	std::mutex locker_; // 동기화용 뮤텍스
 
 	GameEnginePacketHandler* packetHandler_;
+
 };
 
 template<typename T>

@@ -23,16 +23,17 @@ public:
 public:
 	int						GetPacketID()				{ return packetID_; }
 	int						GetPacketSize()				{ return packetSize_; }
-
+	SOCKET					GetSocketSender()			{ return socketSender_; }
 	GameEngineSerializer&	GetSerializer()				{ return serializer_; }
 
 	void					SetPacketID(int _id)		{ packetID_ = _id; }
 	void					SetPacketSize(int _size)	{ packetSize_ = _size; }
+	
 
 	GameEnginePacketBase*	GetNewObject()				{ return getUserObject(); }
 
 	template<typename T>
-	void SetPacketID(T _id);
+	void					SetPacketID(T _id);
 
 protected:
 	// 여기서 packetID_ 를 초기화 해 주세요.
@@ -45,10 +46,17 @@ protected:
 	// 패킷이 할 행동을 정해주세요. bool 값은 서버에서 실행되는지에 대한 여부입니다.
 	virtual void execute(bool _bServer, GameEngineSocketInterface* _network) = 0;
 
+private:
+	// 패킷 핸들러에서만 호출합니다.
+	void setSocketSender(SOCKET _socketSender) { socketSender_ = _socketSender; }
+
 protected:
 	int packetID_;
 	int packetSize_;
 	GameEngineSerializer serializer_;
+
+private:
+	SOCKET socketSender_;
 };
 
 template<typename T>
