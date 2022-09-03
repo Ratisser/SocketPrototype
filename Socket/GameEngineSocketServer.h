@@ -32,6 +32,7 @@ public:
 	void ProcessPacket();
 	// 연결된 클라이언트들에게 패킷을 전송합니다.
 	void Send(GameEnginePacketBase* _packet) override;
+	// 특정 소켓에 데이터를 전송합니다. (패킷을 보낸 클라이언트 중 하나일 겁니다.)
 	void Send(SOCKET _receiver, GameEnginePacketBase* _packet) override;
 
 	void AddPacketHandler(int _packetID, GameEnginePacketBase* _packetObject);

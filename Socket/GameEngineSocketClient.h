@@ -35,6 +35,7 @@ public:
 	void Disconnect();
 	// 서버에 데이터를 전송합니다.
 	void Send(GameEnginePacketBase* _packet) override;
+	// 특정 소켓에 데이터를 전송합니다. (사실 서버...)
 	void Send(SOCKET _receiver, GameEnginePacketBase* _packet) override;
 	// 저장된 패킷을 실행합니다.
 	void ProcessPacket();
