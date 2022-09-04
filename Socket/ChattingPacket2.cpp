@@ -32,7 +32,7 @@ GameEnginePacketBase* ChattingPacket2::getUserObject()
     return new ChattingPacket2;
 }
 
-void ChattingPacket2::execute(bool _bServer, GameEngineSocketInterface* _network)
+void ChattingPacket2::execute(SOCKET _socketSender, GameEngineSocketInterface* _network, bool _bServer)
 {
     std::cout << text_ << "이 메시지는 채팅패킷2 입니다." << std::endl;
 

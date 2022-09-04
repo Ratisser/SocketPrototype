@@ -45,9 +45,6 @@
     <ClCompile Include="GameEngineSerializer.cpp">
       <Filter>소스 파일\Network\Packet</Filter>
     </ClCompile>
-    <ClCompile Include="ChattingPacket.cpp">
-      <Filter>소스 파일\Network\Packet\UserPacket</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngineSocketClient.cpp">
       <Filter>소스 파일\Network\Socket</Filter>
     </ClCompile>
@@ -56,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="GameEnginePacketHandler.cpp">
       <Filter>소스 파일\Network\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="ChattingPacket.cpp">
+      <Filter>소스 파일\Network\Packet\UserPacket</Filter>
     </ClCompile>
     <ClCompile Include="ChattingPacket2.cpp">
       <Filter>소스 파일\Network\Packet\UserPacket</Filter>
@@ -77,9 +77,6 @@
     <ClInclude Include="GameEngineSerializer.h">
       <Filter>소스 파일\Network\Packet</Filter>
     </ClInclude>
-    <ClInclude Include="ChattingPacket.h">
-      <Filter>소스 파일\Network\Packet\UserPacket</Filter>
-    </ClInclude>
     <ClInclude Include="ePacketID.h">
       <Filter>소스 파일\Network\Packet</Filter>
     </ClInclude>
@@ -95,10 +92,13 @@
     <ClInclude Include="GameEnginePacketHandler.h">
       <Filter>소스 파일\Network\Packet</Filter>
     </ClInclude>
-    <ClInclude Include="ChattingPacket2.h">
+    <ClInclude Include="ChattingPacket3.h">
       <Filter>소스 파일\Network\Packet\UserPacket</Filter>
     </ClInclude>
-    <ClInclude Include="ChattingPacket3.h">
+    <ClInclude Include="ChattingPacket.h">
+      <Filter>소스 파일\Network\Packet\UserPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="ChattingPacket2.h">
       <Filter>소스 파일\Network\Packet\UserPacket</Filter>
     </ClInclude>
   </ItemGroup>

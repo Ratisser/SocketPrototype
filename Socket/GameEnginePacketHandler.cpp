@@ -80,7 +80,7 @@ void GameEnginePacketHandler::ProcessPacket(GameEngineSocketInterface* _network)
 
 		packet->Deserialize();
 
-		packet->execute(bServer_, _network);
+		packet->execute(packet->socketSender_, _network, bServer_);
 
 		delete packet;
 	}

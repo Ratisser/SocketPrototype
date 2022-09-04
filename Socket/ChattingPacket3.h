@@ -25,11 +25,14 @@ protected:
 	virtual void userSerialize() override;
 	virtual void userDeserialize() override;
 	virtual GameEnginePacketBase* getUserObject() override;
-	virtual void execute(bool _bServer, GameEngineSocketInterface* _network) override;
+	virtual void execute(SOCKET _socketSender, GameEngineSocketInterface* _network, bool _bServer) override;
 
 private:
 	std::string text_;
 	int id_;
 	float4 destination_;
+
+	// GameEnginePacketBase을(를) 통해 상속됨
+	
 };
 

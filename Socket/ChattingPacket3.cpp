@@ -31,12 +31,13 @@ GameEnginePacketBase* ChattingPacket3::getUserObject()
     return new ChattingPacket3;
 }
 
-void ChattingPacket3::execute(bool _bServer, GameEngineSocketInterface* _network)
+void ChattingPacket3::execute(SOCKET _socketSender, GameEngineSocketInterface* _network, bool _bServer)
 {
     std::cout << text_ << "이 패킷은 패킷3 입니다." << std::endl;
 
     if (_bServer)
     {
-        _network->Send(GetSocketSender(), this);
+        _network->Send(_socketSender, this);
+        _network->Send(this);
     }
 }

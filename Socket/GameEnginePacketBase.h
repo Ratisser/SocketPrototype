@@ -44,7 +44,7 @@ protected:
 	virtual GameEnginePacketBase* getUserObject() = 0;
 
 	// 패킷이 할 행동을 정해주세요. bool 값은 서버에서 실행되는지에 대한 여부입니다.
-	virtual void execute(bool _bServer, GameEngineSocketInterface* _network) = 0;
+	virtual void execute(SOCKET _socketSender, GameEngineSocketInterface* _network, bool _bServer) = 0;
 
 private:
 	// 패킷 핸들러에서만 호출합니다.

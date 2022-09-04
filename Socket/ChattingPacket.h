@@ -21,7 +21,7 @@ protected:
 	virtual void userDeserialize() override;
 	virtual void initPacketID() override;
 	virtual GameEnginePacketBase* getUserObject() override;
-	virtual void execute(bool _bServer, GameEngineSocketInterface* _network) override;
+	virtual void execute(SOCKET _socketSender, GameEngineSocketInterface* _network, bool _bServer) override;
 
 private:
 	enum { MAX_TEXT_SIZE = 512 };
